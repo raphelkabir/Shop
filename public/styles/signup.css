@@ -1,0 +1,25 @@
+#form-container {
+    padding: 40px;
+
+    width: 400px;
+    height: 400px;
+    
+    background-color: rgb(245, 245, 245);
+    border-radius: 10px;
+}
+
+#form-password {
+    margin: 20px 0px 0px 0px;
+}
+
+#buttons-container {
+    margin: 40px 0px 0px 0px;
+}
+
+#login {
+    width: 100px;
+}
+
+#signup {
+    width: 100px;
+}

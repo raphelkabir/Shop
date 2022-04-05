@@ -1,0 +1,32 @@
+<link rel="stylesheet" href="/static/styles/nav-bar.css">
+<script src="/static/scripts/nav-bar.js"></script>
+
+<nav id="menu" class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">Shop</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb -lg-0"></ul>
+      <form id="search-form" class="d-flex">
+        <input id="input" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+      <% if(userOptions == true) { %>
+        <div id="user-menu" class="btn-group">
+          <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <%=email%>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <a href="/profile"><li><button class="dropdown-item" type="button">Profile</button></li></a>
+            <a href="/sell"><li><button class="dropdown-item" type="button">Sell</button></li></a>
+            <a href="/api/auth/logout"><li><button class="dropdown-item" type="button">Logout</button></li></a>
+          </ul>
+        </div>
+      <% } else { %>
+        <a id="login" href="/login"><button type="button" class="btn btn-primary">Login</button></a>
+      <% } %>
+    </div>
+  </div>
+</nav>

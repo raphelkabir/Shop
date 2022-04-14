@@ -12,7 +12,15 @@
         <script src="/static/scripts/product.js"></script>
     </head>
     <body>
-        <%-include('partials/navbar')%>
+        <% if (typeof userType != 'undefined') { %>
+            <% if (userType == 'CLIENT') { %>
+                <%-include('partials/client-navbar')%>
+            <% } else if (userType == 'ORGANISATION') { %>
+                <%-include('partials/organisation-navbar')%>
+            <% } %>
+        <% } else { %>
+            <%-include('partials/generic-navbar')%>
+        <% } %>
         <div class="container">
             <div class="row">
                 <div class="col flex-grow-1"></div>
@@ -24,7 +32,7 @@
             <div class="row">
                 <div class="col">
                     <div id="container-image">
-                        <img id="product-image" src=""/>
+                        <img id="product-image" src="data:image/jpg;base64,<%= item.thumbnail%>"/>
                     </div>
                 </div>
                 <div class="col">

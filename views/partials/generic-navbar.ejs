@@ -13,20 +13,8 @@
         <input id="input" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">Search</button>
       </form>
-      <% if(userOptions == true) { %>
-        <div id="user-menu" class="btn-group">
-          <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <%=email%>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <a href="/profile"><li><button class="dropdown-item" type="button">Profile</button></li></a>
-            <a href="/sell"><li><button class="dropdown-item" type="button">Sell</button></li></a>
-            <a href="/api/auth/logout"><li><button class="dropdown-item" type="button">Logout</button></li></a>
-          </ul>
-        </div>
-      <% } else { %>
-        <a id="login" href="/login"><button type="button" class="btn btn-primary">Login</button></a>
-      <% } %>
+      <a id="login" href="/credential/client"><button type="button" class="btn btn-primary">BUY</button></a>
+      <a id="login" href="/credential/organisation/"><button type="button" class="btn btn-primary">SELL</button></a>
     </div>
   </div>
 </nav>

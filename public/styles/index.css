@@ -15,6 +15,11 @@ a {
     border: none;
 }
 
+.card-image {
+    height: 200px;
+    margin: 10px;
+}
+
 .card-text {
     height: 50px;
     word-break: break-all;

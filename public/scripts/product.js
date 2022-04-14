@@ -14,7 +14,7 @@ $('document').ready(() => {
         }
 
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', '/api/product/buy');
+        xhr.open('POST', '/api/cart/add');
         xhr.onreadystatechange = function() { 
             if (xhr.readyState == 4 && xhr.status == 200) {
               window.location = "/";

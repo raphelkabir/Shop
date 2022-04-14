@@ -4,130 +4,136 @@ ANYTHING THAT DOESN'T FIT OTHER FILES IN ROUTER*/
 //THIRD PARTY LIBRARIES
 
 //INTERNAL
+import { ORGANISATION, CLIENT } from '../data/models/credential.js'
 import { Product } from '../data/models/product.js'
-import { search } from '../router/product.js'
+import { Organisation } from '../data/models/organisation.js'
+import { Client } from '../data/models/client.js'
+import { getItemsOnCart } from '../router/cart.js'
 import { Transaction } from '../data/models/transaction.js'
-import { Wallet } from '../data/models/wallet.js'
-import { isLoggedIn } from './auth.js'
+import { isClientLoggedIn, isOrganisationLoggedIn } from './auth.js'
+import { search } from '../data/search.js'
 
 export default function(app) {
+
     app.get('', async (req, res) => {
-        try {
-            const products = await search()
+        const products = await Product.find(
+            { name: { $regex: '', $options: "i" }}
+        );
 
-            if (req.isAuthenticated()) {
-                res.render('index', {
-                    userOptions: true, 
-                    email: req.session.passport.user.email,
-                    id: req.session.passport.user.id,
-                    products: products
-                })
+        if (req.isAuthenticated()) {
+            const userId = req.session.passport.user.userId
+            let name, userType
+            if (req.session.passport.user.userType == ORGANISATION) {
+                const organisation = await Organisation.findById(userId)
+                name = organisation.name
+                userType = 'ORGANISATION'
+            } else if(req.session.passport.user.userType == CLIENT) {
+                const client = await Client.findById(userId)
+                name = client.name,
+                userType = 'CLIENT'
             }
-            else {
-                res.render('index', { userOptions: false, products: products})
-            }
-
-        } catch(e) {
-            res.status(400).send()
-            console.error('GET HOMEPAGE---------------------------------------------')
-            console.error(e)
+            res.render('index', {
+                auth: true,
+                name: name,
+                products: products,
+                userType: userType
+            })
+        }
+        else {
+            res.render('index', { auth: false, products: products})
         }
     })
 
     app.get('/search/:keywords', async (req, res) => {
-        try {
-            const keywords = req.params.keywords
-            const products = await search(keywords)
+        const keywords = req.params.keywords
+        const products = await search(keywords)
             
-            if (req.isAuthenticated()) {
-                res.render('index', {
-                    userOptions: true, 
-                    email: req.session.passport.user.email,
-                    id: req.session.passport.user.id,
-                    products: products
-                })
-            }
-            else {
-                res.render('index', { userOptions: false, products: products })
-            }
-
-        } catch(e) {
-            res.status(400).send()
-            console.error('GET SEARCHPAGE---------------------------------------------')
-            console.error(e)
-        }
-    })
-    
-    app.get('/login', (req, res) => {
-        res.render('login')
-    })
-    
-    app.get('/signup', (req, res) => {
-        res.render('signup')
-    })
-    
-    app.get('/profile', isLoggedIn, async function (req, res) {
-        try {
-            const wallet = await Wallet.findOne({userId: req.session.passport.user.id})
-            const transactions = await Transaction.find({buyerId: req.session.passport.user.id})
-            transactions.reverse()
-
-            res.render('profile', {
-                userOptions: true,
+        if (req.isAuthenticated()) {
+            res.render('index', {
+                auth: true, 
                 email: req.session.passport.user.email,
                 id: req.session.passport.user.id,
-                balance: wallet.balance,
-                transactions: transactions
+                products: products
             })
-        } catch(e) {
-            res.status(400).send()
-            console.error('GET LOGINPAGE---------------------------------------------')
-            console.error(e)
         }
+        else {
+            res.render('index', { auth: false, products: products })
+        } 
+    })
+    
+    app.get('/credential/organisation', (req, res) => {
+        res.render('form-organisation')
+    })
+    
+    app.get('/credential/client', (req, res) => {
+        res.render('form-client')
+    })
+    
+    app.get('/clientprofile', isClientLoggedIn, async function (req, res) {
+        const transactions = await Transaction.find({originId: req.session.passport.user.id})
+        transactions.reverse()
+
+        res.render('profile', {
+            auth: true,
+            email: req.session.passport.user.email,
+            id: req.session.passport.user.id,
+            balance: wallet.balance,
+            transactions: transactions
+        })
     })
 
-    app.get('/sell', isLoggedIn, (req, res) => {
-        try {
-            res.render('sell', {
-                userOptions: true,
-                email: req.session.passport.user.email,
-                id: req.session.passport.user.id
-            })
-        } catch(e) {
-            res.status(400).send()
-            console.error('GET SELLPAGE---------------------------------------------')
-            console.error(e)
-        }
+    app.get('/organisationprofile', isOrganisationLoggedIn, async function (req, res) {
+        const transactions = await Transaction.find({originId: req.session.passport.user.id})
+        transactions.reverse()
+
+        res.render('profile', {
+            auth: true,
+            email: req.session.passport.user.email,
+            id: req.session.passport.user.id,
+            balance: wallet.balance,
+            transactions: transactions
+        })
+    })
+
+    app.get('/sell', isOrganisationLoggedIn, (req, res) => {
+        res.render('sell', {
+            auth: true,
+            name: req.user.value.name
+        })
     })
 
     app.get('/product/:id', async (req, res) => {
-        try {
-            const productId = req.params.id
-            const foundProduct = await Product.findById(productId)
-
-            let data = {
-                name: foundProduct.name,
-                description: foundProduct.description,
-                userOptions: false
-            }
+        const productId = req.params.id
+        const foundProduct = await Product.findById(productId)
         
-            if (!req.isAuthenticated()) {
-                res.render('product', data)
-                return
-            }
-        
-            //IF USER IS AUTHENTICATED
-            data.userOptions = true
-            data = Object.assign(data, {
-                email: req.session.passport.user.email,
-                id: req.session.passport.user.id
-            });
-
-            res.render('product', data)
-        } catch(e) {
-            res.status(400).send()
-            console.error('GET PRODUCTPAGE---------------------------------------------')
-            console.error(e)
+        let data = {
+            name: foundProduct.name,
+            description: foundProduct.description,
+            auth: false
         }
+    
+        if (!req.isAuthenticated()) {
+            res.render('product', data)
+            return
+        }
+
+        data.auth = true
+        data = Object.assign(data, {
+            email: req.session.passport.user.email,
+            id: req.session.passport.user.id
+        });
+
+        res.render('product', data)
+    })
+
+    app.get('/cart', isClientLoggedIn,async (req, res) => {
+        const userId = req.session.passport.user.id
+        const products = await getItemsOnCart(userId)
+        res.render('cart', {
+            auth: true,
+            email: req.session.passport.user.email,
+            id: userId,
+            products: products
+        })
     })
 }

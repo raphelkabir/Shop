@@ -9,34 +9,41 @@
         
         <!--Internal resources-->
         <link rel="stylesheet" href="/static/styles/sell.css">
-        <script src="/static/scripts/sell.js"></script>
     </head>
     <body>
-        <%-include('partials/navbar')%>
+      <% if (typeof userType != 'undefined') { %>
+        <% if (userType == 'CLIENT') { %>
+            <%-include('partials/client-navbar')%>
+        <% } else if (userType == 'ORGANISATION') { %>
+            <%-include('partials/organisation-navbar')%>
+        <% } %>
+      <% } else { %>
+        <%-include('partials/generic-navbar')%>
+      <% } %>
         <div class="container">
             <div class="container d-flex h-100 flex-column">
                 <div class="flex-grow-1"></div>
                 <div class="row justify-content-center">
-                  <form id="form-product">
+                  <form id="form-product" enctype="multipart/form-data" method="post" action="/api/product/sell">
                     <div id="form-name" class="form-group">
                       <label for="product-name" class="form-label">Name</label>
-                      <input id="product-name" class="form-control" placeholder="Product name">
+                      <input id="product-name" class="form-control" name="name" type="text" placeholder="Product name">
                     </div>
                     <div id="form-description" class="form-group">
                       <label for="product-description" class="form-label">Description</label>
-                      <input id="product-description" class="form-control" placeholder="Product description">
+                      <input id="product-description" class="form-control" type="text" name="description" placeholder="Product description">
                     </div>
                     <div id="form-image" class="form-group">
                       <label for="product-image" class="form-label">Product image</label>
-                      <input id="product-image" class="form-control" type="file">
+                      <input id="product-image" class="form-control" type="file" name="image">
                     </div>
                     <div id="form-price" class="form-group">
                       <label for="product-price" class="form-label">Price</label>
-                      <input id="product-price" class="form-control" placeholder="Product price">
+                      <input id="product-price" class="form-control" type="text" name="price" placeholder="Product price">
                     </div>
                     <div id="form-stock" class="form-stock">
                       <label for="product-stock" class="form-label">Stock</label>
-                      <input id="product-stock" class="form-control" placeholder="Product stock">
+                      <input id="product-stock" class="form-control" type="text" name="stock" placeholder="Product stock">
                     </div>
                     <button id="btn-submit" type="submit" class="btn btn-primary">Sell</button>
                   </form>
